@@ -1,0 +1,193 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <link rel="Stylesheet" type="text/css" href="/static/css/style.css">
+  <link rel="Stylesheet" type="text/css" href="/static/css/tango.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="alternate" type="application/atom+xml" href="atom.xml" title="Atom feed">
+  <title>并发编程的挑战 - 个人wiki</title>
+  <meta name="keywords" content="我的学习笔记" />
+  <meta name="description" content="我的学习笔记" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="container">
+    
+<div id="header">
+  <div class="post-nav"><a href="/">Home</a>&nbsp;&#62;&nbsp;<a href="/#Reading">Reading</a>&nbsp;&#62;&nbsp;并发编程的挑战
+    <span class="updated">该页面更新于&nbsp;
+      2018-10-16 09:50
+    </span></div>
+</div>
+<div class="clearfix"></div>
+
+<div class="page_title">并发编程的挑战</div>
+
+<p>并发编程的目的是为了让我们的程序变得更快，但是，并不是启动更多的线程就能让程序最大限度地并发执行。线程不在于多，在并发编程中，我们将面临如下挑战：上下文切换、死锁问题、受限于软硬件资源限制问题。</p>
+<h2 id="_1">上下文切换</h2>
+<p>单核CPU是如果实现多线程的呢？</p>
+<p>CPU通过给每个线程分配<code>时间片</code>来实现，<code>时间片</code>是分配给线程的时间。因为<code>时间片</code>非常短，所以CPU不停地切换线程执行，我们感觉上是同时执行的。（一般的，时间片只有十几毫秒 <code>ms</code>）</p>
+<p>当一个任务执行一个时间片之后，会切换成下一个任务执行，但是切换之前会保存这个任务的状态，以便下次回到这个任务的时候，可以下载上一次的状态，继续执行。这样，一个任务从保存到再加载的过程就是一次上下文切换。</p>
+<p>上面给出了<code>时间片</code> 和 <code>上下文切换</code>的解释。不只是计算机遵循这些原则。</p>
+<p>拿现实生活中的例子，我们阅读英文书籍，遇到不会的单词，记住读到的位置，然后去查词典，查会了之后，我们回到上次卡住的位置继续阅读。想到回到原来的位置，大脑必须得记住在什么位置。这样周而复始，查单词和读书之间的切换是会影响读书效率的。这样也就不难理解，上下文切换对多线程的影响了。</p>
+<p><strong>多线程一定快吗？</strong> 根据一个代码的实例，来探讨一下这个问题：</p>
+<div class="hlcode"><pre><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cuteximi</span><span class="o">.</span><span class="na">concurrent</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @program: Java-300</span>
+<span class="cm"> * @description: 多线程一定快吗？</span>
+<span class="cm"> * @author: TSL</span>
+<span class="cm"> * @create: 2018-10-11 14:22</span>
+<span class="cm"> **/</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestConcurrent</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">10000</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+        <span class="n">concurrency</span><span class="o">();</span>
+        <span class="n">serial</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="c1">// 并行</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">concurrency</span><span class="o">()</span> <span class="kd">throws</span> <span class="n">InterruptedException</span><span class="o">{</span>
+        <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="n">Thread</span> <span class="n">thread</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+                <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+                    <span class="n">a</span><span class="o">+=</span><span class="mi">5</span><span class="o">;</span>
+                <span class="o">}</span>
+
+            <span class="o">}</span>
+        <span class="o">});</span>
+        <span class="n">thread</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">count</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+            <span class="n">b</span><span class="o">--;</span>
+        <span class="o">}</span>
+        <span class="kt">long</span> <span class="n">time</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">;</span>
+
+        <span class="n">thread</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;concurrency: &quot;</span><span class="o">+</span><span class="n">time</span><span class="o">+</span><span class="s">&quot; ms,b=&quot;</span><span class="o">+</span><span class="n">b</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// 串行</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">serial</span><span class="o">(){</span>
+        <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+            <span class="n">a</span><span class="o">+=</span><span class="mi">5</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="kt">int</span> <span class="n">b</span> <span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">long</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">count</span><span class="o">;</span><span class="n">i</span><span class="o">++){</span>
+            <span class="n">b</span><span class="o">--;</span>
+        <span class="o">}</span>
+        <span class="kt">long</span> <span class="n">time</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">-</span> <span class="n">start</span><span class="o">;</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Serial &quot;</span><span class="o">+</span><span class="n">time</span><span class="o">+</span><span class="s">&quot; ms,b=&quot;</span><span class="o">+</span><span class="n">b</span><span class="o">+</span><span class="s">&quot;,a=&quot;</span><span class="o">+</span><span class="n">a</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>经过不断的修改，上述代码的 count 的值。对比两种方式的执行速度。<br />
+|count的值|串行方法耗时（ms）|并行方法耗时（ms）|并行比串行快多少|<br />
+|--|--|--|--|<br />
+|1万|0|1|慢|<br />
+|10万|3|4|慢|<br />
+|100万|6|6|差不多|<br />
+|1000万|18|11|快|<br />
+|1亿|160|79|快了一倍多</p>
+<p>上表的数据是一个平均值，但是很容易看出<strong>多线程就不一定快！</strong><br />
+那么一开始的时候为什么串行比并行还要快呢？是因为<strong>并行存在创建线程和上下文切换的花销</strong>。随着数量的扩大，多线程才显示出优势。</p>
+<p>我们不得不重视，上下文切换的开销！</p>
+<h2 id="_2">死锁</h2>
+<p>🔐是一个很有用的工具，使用锁的过程中最容易出现的就是死锁，一旦产生死锁就会造成系统不可用。看下面这段代码：</p>
+<div class="hlcode"><pre><span class="kn">package</span> <span class="n">com</span><span class="o">.</span><span class="na">cuteximi</span><span class="o">.</span><span class="na">concurrent</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * @program: Java-300</span>
+<span class="cm"> * @description: 死锁的例子</span>
+<span class="cm"> * @author: TSL</span>
+<span class="cm"> * @create: 2018-10-11 15:14</span>
+<span class="cm"> **/</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DeadLockDemo</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">A</span> <span class="o">=</span> <span class="s">&quot;A&quot;</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">B</span> <span class="o">=</span> <span class="s">&quot;B&quot;</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">deadLock</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">deadLock</span><span class="o">(){</span>
+        <span class="c1">// 线程1</span>
+        <span class="n">Thread</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">synchronized</span> <span class="o">(</span><span class="n">A</span><span class="o">){</span>
+                    <span class="k">try</span> <span class="o">{</span>
+                        <span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">2000</span><span class="o">);</span>
+                    <span class="o">}</span><span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">){</span>
+                        <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+                    <span class="o">}</span>
+                    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">B</span><span class="o">){</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;111111&quot;</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="c1">// 线程2</span>
+        <span class="n">Thread</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(</span><span class="k">new</span> <span class="n">Runnable</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">run</span><span class="o">()</span> <span class="o">{</span>
+                <span class="kd">synchronized</span> <span class="o">(</span><span class="n">B</span><span class="o">){</span>
+                    <span class="kd">synchronized</span> <span class="o">(</span><span class="n">A</span><span class="o">){</span>
+                        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;222222222&quot;</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="n">t1</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+        <span class="n">t2</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>执行这段代码的时候，一直结束不了，因为线程1 和线程2在互相等待。</p>
+<p>如何避免死锁呢？</p>
+<ul>
+<li>避免一个线程同时获得多把锁。</li>
+<li>避免一个线程在🔐内同时获得多个资源。尽量保证每把锁仅占用一个资源。</li>
+<li>尝试使用定时锁，使用lock.tryLock（timeout）来代替内部锁。</li>
+<li>对于数据库锁，加锁和解锁必须在一个数据库连接里面，否则会出现解锁失败的情况。</li>
+</ul>
+<h2 id="_3">资源限制</h2>
+<p>程序执行速度受限于极端及硬件或软件资源，叫做资源限制。</p>
+<ul>
+<li>硬件限制：比如 带宽、硬盘读写速度、CPU处理速度等。</li>
+<li>软件限制：比如 数据库连接数，sock连接数等。</li>
+</ul>
+<p>对于硬件的限制，可以考虑使用<strong>集群</strong>。比如使用 ODPS、Hadoop或者自己搭建集群。</p>
+<p>对于软件资源的限制，可以考虑使用<strong>资源池</strong>将资源复用。</p>
+<h2 id="_4">小结</h2>
+<p>本文主要说明了在并发编程中遇到几个的挑战，建议使用 JDK 并发包中的提供的并发容器和工具类来解决这一类问题。</p>
+<script src="../staic/js/app.js"></script>
+  </div>
+  <div id="footer">
+    <span>
+      <p>Copyright © 2018 cuteximi.
+        Powered by <a href="http://cuteximi.com" target="_blank">cuteximi.com</a>.</p>
+      <p>该站点更新于 2018-10-16 15:23:40</p>
+    </span>
+  </div>
+
+  
+  
+</body>
+
+</html>

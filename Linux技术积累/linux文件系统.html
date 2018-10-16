@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <link rel="Stylesheet" type="text/css" href="/static/css/style.css">
+  <link rel="Stylesheet" type="text/css" href="/static/css/tango.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="alternate" type="application/atom+xml" href="atom.xml" title="Atom feed">
+  <title>Linux文件系统 - 个人wiki</title>
+  <meta name="keywords" content="我的学习笔记" />
+  <meta name="description" content="我的学习笔记" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="container">
+    
+<div id="header">
+  <div class="post-nav"><a href="/">Home</a>&nbsp;&#62;&nbsp;<a href="/#Linux技术积累">Linux技术积累</a>&nbsp;&#62;&nbsp;Linux文件系统
+    <span class="updated">该页面更新于&nbsp;
+      2018-10-16 15:21
+    </span></div>
+</div>
+<div class="clearfix"></div>
+
+<div class="page_title">Linux文件系统</div>
+
+<p>背景：<br />
+阅读英文原作只为了更好地理解书中的精髓，当然也是为了更好地掌握书中的技巧。我们会坚持阅读全书，并记录书中的精髓。</p>
+<p>The first thing we need to learn is how to navigate the filesystem on our linux system. In this article I will introduce the following commands:</p>
+<p>我们需要学习的第一件事是如何在 Linux 的文件系统中跳转，在本文章中我们介绍如下命令：</p>
+<ul>
+<li>pwd   </li>
+<li>cd</li>
+<li>ls</li>
+</ul>
+<p>还会介绍文件命名的规则：<br />
+- <strong>以 “.” 字符开头的文件名是隐藏文件</strong>，ls 命令不能列出它们， 用 ls -a 命令就可以了。</p>
+<ul>
+<li>
+<p>文件名和命令名是<strong>大小写敏感的</strong>。文件名 “File1” 和 “file1” 是指两个不同的文件名。</p>
+</li>
+<li>
+<p>Linux 没有“文件扩展名”的概念。</p>
+</li>
+<li>
+<p>虽然 Linux 支持长文件名，文件名可能包含空格，标点符号，但标点符号仅限 使用 “.”，“－”，下划线。最重要的是，<strong>不要在文件名中使用空格</strong>。如果你想表示词与 词间的空格，用下划线字符来代替。</p>
+</li>
+</ul>
+<h2 id="1">1. 理解文件系统🌲</h2>
+<p>在类 unix 系统中，比如 linux 中，总的只有<strong>一个</strong>单一的文件系统树，不管有多少个磁盘或者存储设备连接到这个计算机，这些存储设备连接（挂载）到目录树的各个节点上。注意，这是一颗倒置的目录树。</p>
+<h3 id="2">2. 当前目录</h3>
+<p>在图形化界面可以看出目录的层级结构，但是在命令行中，是没有这个概念的，我们就像是在迷宫一样，在任意时刻，我们处在一个目录下，我们当前所处的目录，称作当前目录。我们可以进入上级目录，或者下级目录。</p>
+<p>使用 pwd 来显示当前目录。（ print working directory 的缩写）</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">pwd</span>
+<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">me</span>
+</pre></div>
+
+
+<h2 id="3">3. 列出目录的内容</h2>
+<p>To list the files and directories in the current working directory, we use the <code>ls</code> command.</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">ls</span>
+<span class="n">Desktop</span> <span class="n">Documents</span> <span class="n">Music</span> <span class="n">Pictures</span> <span class="n">Public</span> <span class="n">Templates</span> <span class="n">Videos</span>
+</pre></div>
+
+
+<p>单独一个 ls 是默认列出当前目录下的内容，当然也可以在后面指定目录。比如，<code>ls /usr</code> 指定列出 /usr 目录下的内容。</p>
+<p>介绍 ls 一些常用的参数：<br />
+|选项 | 说明 |<br />
+| -- | --|<br />
+|ls -a | 显示隐藏文件 |<br />
+|ls -l | 显示更详细的信息|<br />
+|ls -d| ls -d -l 目录 直接显示这个目录的详情，而不是显示这个目录里面的内容|<br />
+|ls 目录1 目录2  | 可以列出多个目录下的内容|<br />
+|ls -t | 按照修改时间排序|<br />
+|ls -S | 按照文件大小排序|<br />
+|ls -h | 显以人类可读的形式显示文件大小|<br />
+|ls -r | 反序|</p>
+<h2 id="4">4. 切换目录（更改当前工作目录）</h2>
+<p>切换目录我们使用命令：cd 是 change directory 的缩写。</p>
+<h4 id="41">4.1 绝对路径</h4>
+<p>An absolute pathname begins with the root directory.<br />
+绝对路径开始于根目录 /</p>
+<h4 id="42">4.2 相对路径</h4>
+<p>A relative pathname starts from the working directory.<br />
+相对路径始于当前工作目录。</p>
+<p>为了做到这个（用相对路径表示）， 我们在文件系统树中用一对特殊符号来表示相对位置。 这对特殊符号是 “.” (点) 和 “..” (点点)。</p>
+<p>符号 “.” 指的是工作目录，”..” 指的是工作目录的父目录</p>
+<h4 id="43">4.3 演示</h4>
+<p>🌰1：使用绝对路径，进入 bin 目录下</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span>
+<span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="n">bin</span><span class="p">]</span><span class="err">$</span> <span class="n">pwd</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span>
+</pre></div>
+
+
+<p>🌰2：使用相对路径</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">usr</span>  <span class="err">#</span> <span class="err">绝对路径</span>
+<span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="n">usr</span><span class="p">]</span><span class="err">$</span> <span class="n">cd</span> <span class="p">.</span><span class="o">/</span><span class="n">bin</span>  <span class="err">#</span> <span class="err">相对路径</span>
+<span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="n">bin</span><span class="p">]</span><span class="err">$</span> <span class="n">pwd</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span>
+</pre></div>
+
+
+<p>小结：<strong>有一件很重要的事，我必须指出来。在几乎所有的情况下，你可以省略”./”。它是隐含的</strong>。</p>
+<p>所以上面的例子，也可以这样写：省掉 <code>./</code></p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">usr</span>  <span class="err">#</span> <span class="err">绝对路径</span>
+<span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="n">usr</span><span class="p">]</span><span class="err">$</span> <span class="n">cd</span> <span class="n">bin</span>  <span class="err">#</span> <span class="err">相对路径</span><span class="p">,</span><span class="err">省掉了</span> <span class="p">.</span><span class="o">/</span>
+<span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="n">bin</span><span class="p">]</span><span class="err">$</span> <span class="n">pwd</span>
+<span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">bin</span>
+</pre></div>
+
+
+<p>有用的参数：<br />
+| 操作 | 说明 |<br />
+| ---------- | ------ |<br />
+| cd - | 跳到先前的工作目录 |<br />
+| cd ~username| 跳转到用户主目录，cd ~ximi 跳转到 ximi 用户的 home 目录|</p>
+<p>自行练习一下吧...</p>
+<script src="../staic/js/app.js"></script>
+  </div>
+  <div id="footer">
+    <span>
+      <p>Copyright © 2018 cuteximi.
+        Powered by <a href="http://cuteximi.com" target="_blank">cuteximi.com</a>.</p>
+      <p>该站点更新于 2018-10-16 15:23:40</p>
+    </span>
+  </div>
+
+  
+  
+</body>
+
+</html>

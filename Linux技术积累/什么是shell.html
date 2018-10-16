@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <link rel="Stylesheet" type="text/css" href="/static/css/style.css">
+  <link rel="Stylesheet" type="text/css" href="/static/css/tango.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="alternate" type="application/atom+xml" href="atom.xml" title="Atom feed">
+  <title>什么是shell - 个人wiki</title>
+  <meta name="keywords" content="我的学习笔记" />
+  <meta name="description" content="我的学习笔记" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+
+<body>
+  <div id="container">
+    
+<div id="header">
+  <div class="post-nav"><a href="/">Home</a>&nbsp;&#62;&nbsp;<a href="/#Linux技术积累">Linux技术积累</a>&nbsp;&#62;&nbsp;什么是shell
+    <span class="updated">该页面更新于&nbsp;
+      2018-10-16 15:21
+    </span></div>
+</div>
+<div class="clearfix"></div>
+
+<div class="page_title">什么是shell</div>
+
+<p>背景：<br />
+阅读英文原作只为了更好地理解书中的精髓，当然也是为了更好地掌握书中的技巧。我们会坚持阅读全书，并记录书中的精髓。</p>
+<h2 id="1-linux">1. 理解 Linux 的 “自由”</h2>
+<p>Many people speak of "freedom" with regard to Linux. Freedom is the power to decide what your computer does and the only way to have this freedom is to know what your computer is doing. Freedom is a computer that is without any secrets, one where everything can be known if you care enough to find it.</p>
+<p>很多人一说到Linux, 就会说自由。但是你真的而理解这种自由吗？这种自由是一种权力，能够决定你的计算机干什么，获取这种自由的唯一方式就是知道你的计算机在做什么。自由就是你的计算机没有任何㊙️，你可以从计算机那里了解一切，只要你用心去寻找。</p>
+<h2 id="2-shell">2. 什么是 shell</h2>
+<p>We speak of the command line, we are really referring to the shell. The shell is a program that takes keyboard commands and passes them to the operating system to carry out.</p>
+<p>一说起命令行，我们真正指的是 shell。shell 就是一个程序，把键盘的输入传递给操作系统去执行。</p>
+<h3 id="3-shell">3. 初次相遇 shell</h3>
+<p>第一次见到 shell,你只会看到一行提示符，形如：<code>[me@linuxbox ~]$</code></p>
+<p>This is called a shell prompt and it will appear whenever the shell is ready to accept input.</p>
+<p>这叫做 shell 提示符，   无论何时当 shell 准备好接受输入时，就会闲这样的提示符。当然，出现的形式会根据不同的 Linux 发行版有所不同。但是大体上会包含 <code>主机名</code> <code>用户名</code> <code>当前目录</code> 和一个<code>美元符号</code>。</p>
+<p>🤔另外，如果提示符最后是 # 号，而不是 $，会表示这是一个具有 super root 权限的终端。</p>
+<h3 id="3">3. 一些简单入门的小命令</h3>
+<p><strong>命令历史</strong>：使用  ⬆️ 箭头可以浏览以往的命令，以往的命令会重新出现在提示符后面。<br />
+<strong>移动光标</strong>：使用 ⬅️ ➡️ 箭头可以移动光标，来更好地编辑命令。<br />
+<strong>时间</strong>：date 显示系统当前时间和日期</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">date</span>
+<span class="n">Sun</span> <span class="n">Sep</span> <span class="mi">30</span> <span class="mi">10</span><span class="o">:</span><span class="mo">02</span><span class="o">:</span><span class="mo">00</span> <span class="n">CST</span> <span class="mi">2018</span>
+</pre></div>
+
+
+<p><strong>日历</strong>：cal 与上一个命令相关，默认显示当前月份的日历。</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">cal</span>
+   <span class="n">September</span> <span class="mi">2018</span>
+<span class="n">Su</span> <span class="n">Mo</span> <span class="n">Tu</span> <span class="n">We</span> <span class="n">Th</span> <span class="n">Fr</span> <span class="n">Sa</span>
+                   <span class="mi">1</span>
+ <span class="mi">2</span>  <span class="mi">3</span>  <span class="mi">4</span>  <span class="mi">5</span>  <span class="mi">6</span>  <span class="mi">7</span>  <span class="mi">8</span>
+ <span class="mi">9</span> <span class="mi">10</span> <span class="mi">11</span> <span class="mi">12</span> <span class="mi">13</span> <span class="mi">14</span> <span class="mi">15</span>
+<span class="mi">16</span> <span class="mi">17</span> <span class="mi">18</span> <span class="mi">19</span> <span class="mi">20</span> <span class="mi">21</span> <span class="mi">22</span>
+<span class="mi">23</span> <span class="mi">24</span> <span class="mi">25</span> <span class="mi">26</span> <span class="mi">27</span> <span class="mi">28</span> <span class="mi">29</span>
+<span class="mi">30</span>
+</pre></div>
+
+
+<p><strong>查看磁盘剩余空间</strong>：df</p>
+<div class="hlcode"><pre><span class="p">[</span><span class="n">me</span><span class="err">@</span><span class="n">linuxbox</span> <span class="o">~</span><span class="p">]</span><span class="err">$</span> <span class="n">df</span>
+<span class="n">Filesystem</span>    <span class="mi">512</span><span class="o">-</span><span class="n">blocks</span>      <span class="n">Used</span> <span class="n">Available</span> <span class="n">Capacity</span> <span class="n">iused</span>               <span class="n">ifree</span> <span class="o">%</span><span class="n">iused</span>  <span class="n">Mounted</span> <span class="n">on</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk1s1</span>   <span class="mi">489620264</span> <span class="mi">166659552</span> <span class="mi">315340480</span>    <span class="mi">35</span><span class="o">%</span>  <span class="mi">945005</span> <span class="mi">9223372036853830802</span>    <span class="mi">0</span><span class="o">%</span>   <span class="o">/</span>
+<span class="n">devfs</span>                <span class="mi">385</span>       <span class="mi">385</span>         <span class="mi">0</span>   <span class="mi">100</span><span class="o">%</span>     <span class="mi">666</span>                   <span class="mi">0</span>  <span class="mi">100</span><span class="o">%</span>   <span class="o">/</span><span class="n">dev</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk1s4</span>   <span class="mi">489620264</span>   <span class="mi">6291496</span> <span class="mi">315340480</span>     <span class="mi">2</span><span class="o">%</span>       <span class="mi">3</span> <span class="mi">9223372036854775804</span>    <span class="mi">0</span><span class="o">%</span>   <span class="o">/</span><span class="n">private</span><span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">vm</span>
+<span class="n">map</span> <span class="o">-</span><span class="n">hosts</span>             <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>   <span class="mi">100</span><span class="o">%</span>       <span class="mi">0</span>                   <span class="mi">0</span>  <span class="mi">100</span><span class="o">%</span>   <span class="o">/</span><span class="n">net</span>
+<span class="n">map</span> <span class="n">auto_home</span>          <span class="mi">0</span>         <span class="mi">0</span>         <span class="mi">0</span>   <span class="mi">100</span><span class="o">%</span>       <span class="mi">0</span>                   <span class="mi">0</span>  <span class="mi">100</span><span class="o">%</span>   <span class="o">/</span><span class="n">home</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk2s1</span>     <span class="mi">5859376</span>    <span class="mi">378616</span>   <span class="mi">5480760</span>     <span class="mi">7</span><span class="o">%</span>    <span class="mi">2830</span>          <span class="mi">4294964449</span>    <span class="mi">0</span><span class="o">%</span>   <span class="o">/</span><span class="n">Volumes</span><span class="o">/</span><span class="n">ACDSee</span>
+<span class="o">/</span><span class="n">dev</span><span class="o">/</span><span class="n">disk3s2</span>      <span class="mi">310480</span>    <span class="mi">283440</span>     <span class="mi">27040</span>    <span class="mi">92</span><span class="o">%</span>     <span class="mi">255</span>          <span class="mi">4294967024</span>    <span class="mi">0</span><span class="o">%</span>   <span class="o">/</span><span class="n">Volumes</span><span class="o">/</span><span class="n">Charles</span> <span class="n">Proxy</span> <span class="n">v4</span><span class="mf">.2.7</span>
+<span class="nl">ximi:</span><span class="o">~</span> <span class="n">taoshilei</span><span class="err">$</span>
+</pre></div>
+
+
+<p><strong>结束终端会话</strong>：exit</p>
+<p>Note: Don't be tempted to use Ctrl-c and Ctrl-v to perform copy and paste inside a terminal window. They don't work.</p>
+<p>提示：不要在终端窗口使用 Ctrl-c 和Ctrl-v 来完成复制和粘贴工作。这些不起作用。这两个命令有别的含义，他们早于在微软之前就已经定义了这两个命令的含义，所以不是我们在windows下熟悉的复制粘贴。</p>
+<script src="../staic/js/app.js"></script>
+  </div>
+  <div id="footer">
+    <span>
+      <p>Copyright © 2018 cuteximi.
+        Powered by <a href="http://cuteximi.com" target="_blank">cuteximi.com</a>.</p>
+      <p>该站点更新于 2018-10-16 15:23:40</p>
+    </span>
+  </div>
+
+  
+  
+</body>
+
+</html>
